@@ -14,6 +14,7 @@ Author URI: http://www.livefyre.com/
 define('LFAPPS__PLUGIN_PATH', dirname( __FILE__ ) . DIRECTORY_SEPARATOR);
 define('LFAPPS__PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('LFAPPS__VERSION', '0.1');
+define('LFAPPS__PROTOCOL', isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http');
 /**
  * Load Main Class
  */
@@ -24,6 +25,7 @@ add_action( 'init', array( 'Livefyre_Apps', 'init' ) );
  * Load Admin Class if inside wp-admin
  */
 if(is_admin()) {
-    require_once( LFAPPS__PLUGIN_PATH . "/Livefyre_Apps_Admin.php" );    
+    require_once( LFAPPS__PLUGIN_PATH . "/Livefyre_Apps_Admin.php" );  
+    add_action( 'admin_init', array('Livefyre_Apps_Admin', 'init_settings'));
     add_action( 'init', array( 'Livefyre_Apps_Admin', 'init' ) );
 }

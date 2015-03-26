@@ -16,9 +16,9 @@
         <div id="normal-sortables" class="meta-box-sortables ui-sortable">
             <div id="referrers" class="postbox ">
                 <div class="handlediv" title="Click to toggle"><br></div>
-                <h3 class="hndle"><span><?php esc_html_e('LiveComments Settings', 'lfapps-comments'); ?></span></h3>
-                <form name="livefyre_comments_general" id="livefyre_comments_general" action="<?php echo esc_url(Livefyre_Apps_Admin::get_page_url('livefyre_apps_comments')); ?>" method="POST">
-                    <?php wp_nonce_field( 'form-livefyre_comments_general' ); ?>
+                <h3 class="hndle"><span><?php esc_html_e('Comments Settings', 'lfapps-comments'); ?></span></h3>
+                <form name="livefyre_comments_general" id="livefyre_comments_general" action="options.php" method="POST">
+                    <?php settings_fields('livefyre_apps_settings_comments'); ?>
                     <div class='inside'>
                         <table cellspacing="0" class="lfapps-form-table">
                             <tr>
@@ -32,19 +32,19 @@
                                     $post_types = array_merge(array('post'=>'post', 'page'=>'page'), $post_types);
                                     $used_types = LFAPPS_Comments_Admin::get_chat_display_post_types();
                                     foreach ($post_types as $post_type ) {
-                                        $post_type_name = 'livefyre_display_' .$post_type;
+                                        $post_type_name = 'livefyre_apps-livefyre_display_' .$post_type;
                                         $checked = '';
-                                        if(Livefyre_Apps::get_option($post_type_name) === true) {
+                                        if(get_option($post_type_name) == '1' || get_option($post_type_name) == 'true') {
                                             $checked = 'checked';
                                         } 
-                                        $post_type_name_chat = 'livefyre_chat_display_' .$post_type;
+                                        $post_type_name_chat = 'livefyre_apps-livefyre_chat_display_' .$post_type;
                                         $disabled = false;
                                         if(isset($used_types[$post_type_name_chat])) {
                                             $disabled = true;
                                         }
                                         ?>
                                         <input <?php echo $disabled ? 'disabled' : ''; ?> type="checkbox" id="<?php echo esc_attr($post_type_name); ?>" name="<?php echo esc_attr($post_type_name); ?>" value="true" <?php echo $checked; ?>/>
-                                        <label for="<?php echo esc_attr($post_type_name); ?>"><?php echo esc_html_e($post_type, 'lfapps-comments'); ?><?php echo $disabled ? ' <small><em>(LiveChat enabled.)</em></small>' : ''; ?></label><br/>
+                                        <label for="<?php echo esc_attr($post_type_name); ?>"><?php echo esc_html_e($post_type, 'lfapps-comments'); ?><?php echo $disabled ? ' <small><em>(Chat enabled.)</em></small>' : ''; ?></label><br/>
                                         <?php
                                     }
                                     ?>
@@ -52,28 +52,29 @@
                             </tr>
                             <tr>
                                 <td colspan='2'>
-                                    <?php esc_html_e('(Select the types of posts on which you wish to enable LiveComments. Note: Only LiveChat or LiveComments may be enabled for each of these options.)', 'lfapps-chat'); ?>
-                                </td>
+                                    <?php esc_html_e('(Select the types of posts on which you wish to enable Comments. Note: Only Chat or Comments may be enabled for each of these options.)', 'lfapps-chat'); ?>
                             </tr>
                             <tr>
-                                <td colspan='2' class="info">
-                                    <strong>Note:</strong>
-                                    <p>There multiple other configuration options available for LiveComments and you can specify them by
+                                <td colspan='2'>
+                                    <br />
+                                    <strong>Comments Configuration Options:</strong>
+                                    <p>There are multiple other configuration options available for Comments and you can specify them by
                                     declaring "liveCommentsConfig" variable in your theme header. For example:</p>
                                     <blockquote class="code">
                                     <?php echo esc_html("<script>
                                          var liveCommentsConfig = { 'readOnly': true }
                                          </script>"); ?>                                            
                                     </blockquote>
-                                    <p><a target="_blank" href="http://answers.livefyre.com/developers/app-integrations/comments/#convConfigObject">Click here</a> for a full explanation of LiveComments options.</p>
+                                    <p><a target="_blank" href="http://answers.livefyre.com/developers/app-integrations/comments/#convConfigObject">Click here</a> for a full explanation of Comments options.</p>
+                                    <strong>Comments String Customizations:</strong>
+                                    <p>String customizations are possible as well through applying WordPress filters. Information on how to implement this is <a target="_blank" href="http://answers.livefyre.com/developers/cms-plugins/wordpress/">found here</a>.</p>
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <div id="major-publishing-actions">									
                         <div id="publishing-action">
-                            <input type="hidden" name="livefyre_comments_general" value=""/> 
-                            <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_html_e('Save Changes'); ?>">
+                            <?php submit_button(); ?>
                         </div>
                         <div class="clear"></div>
                     </div>
@@ -86,7 +87,7 @@
         <div id="normal-sortables" class="meta-box-sortables ui-sortable">
             <div id="referrers" class="postbox ">
                 <div class="handlediv" title="Click to toggle"><br></div>
-                <h3 class="hndle"><span><?php esc_html_e('LiveComments Status', 'lfapps-comments'); ?></span></h3>
+                <h3 class="hndle"><span><?php esc_html_e('Comments Status', 'lfapps-comments'); ?></span></h3>
                 <div class="inside">
                     <div class='lfcomments-status-row clearfix'>
                         <div class='lfcomments-status-box'>
@@ -146,13 +147,13 @@
         <div id="normal-sortables" class="meta-box-sortables ui-sortable">
             <div id="referrers" class="postbox ">
                 <div class="handlediv" title="Click to toggle"><br></div>
-                <h3 class="hndle"><span><?php esc_html_e('LiveComments Shortcode', 'lfapps-comments'); ?></span></h3>
+                <h3 class="hndle"><span><?php esc_html_e('Comments Shortcode', 'lfapps-comments'); ?></span></h3>
                 <div class='inside'>
-                    <p>LiveComments can also be activated by placing a shortcode inside your content.</p>
-                    <p>The shortcode usage is pretty simple. Let's say we wish to generate a LiveComments stream inside post content. We could enter something like this
+                    <p>Comments can also be activated by placing a shortcode inside your content.</p>
+                    <p>The shortcode usage is pretty simple. Let's say we wish to generate a Comments stream inside post content. We could enter something like this
                         inside the content editor:</p>
                     <p class='code'>[livefyre_livecomments]</p>
-                    <p>LiveComments streams are separated by the "Article ID" and if not specified it will use the current post ID. You can define the "Article ID"
+                    <p>Comments streams are separated by the "Article ID" and if not specified it will use the current post ID. You can define the "Article ID"
                         manually like this:</p>
                     <p class='code'>[livefyre_livecomments article_id="123"]</p>
                 </div> 

@@ -1,16 +1,16 @@
 <?php
 require_once(LFAPPS__PLUGIN_PATH . "/libs/php/LFAPPS_JWT.php");
 
-$network_name = Livefyre_Apps::get_option('livefyre_domain_name', 'livefyre.com');
+$network_name = get_option('livefyre_apps-livefyre_domain_name', 'livefyre.com');
 $delegate_auth_url = 'http://admin.' . $network_name;
-$site_id = Livefyre_Apps::get_option('livefyre_site_id');
+$site_id = get_option('livefyre_apps-livefyre_site_id');
 $article_id = get_the_ID();
-$site_key = Livefyre_Apps::get_option('livefyre_site_key');
+$site_key = get_option('livefyre_apps-livefyre_site_key');
 
 $collection_meta = array(
-    'title'=>  get_the_title(),
-    'url'=> get_permalink(get_the_ID()),
-    'articleId'=>$article_id,
+    'title'=>  apply_filters('livefyre_collection_title', get_the_title(get_the_ID())),
+    'url'=> apply_filters('livefyre_collection_url', get_permalink(get_the_ID())),
+    'articleId'=> apply_filters('livefyre_article_id', get_the_ID()),
     'type'=>'sidenotes'
 );
 $jwtString = LFAPPS_JWT::encode($collection_meta, $site_key);
@@ -20,16 +20,17 @@ $conv_config = array(
     'articleId'=>$article_id,
     'collectionMeta'=>$jwtString,
     'network'=>$network_name,
-    'selectors'=>Livefyre_Apps::get_option('livefyre_sidenotes_selectors'),
+    'selectors'=>get_option('livefyre_apps-livefyre_sidenotes_selectors'),
 );
-
+$strings = apply_filters( 'livefyre_custom_sidenotes_strings', null );
 $conv_config_str = json_encode($conv_config);
 ?>
 <script type="text/javascript">
-
 Livefyre.require(['<?php echo Livefyre_Apps::get_package_reference('sidenotes'); ?>'], function (Sidenotes) {
     load_livefyre_auth();
     var convConfigSidenotes = <?php echo $conv_config_str; ?>;
+    convConfigSidenotes['network'] = "<?php echo esc_js($network_name); ?>";
+    <?php echo isset( $strings ) ? "convConfigSidenotes['strings'] = " . json_encode($strings) . ';' : ''; ?>
     if(typeof(livefyreSidenotesConfig) !== 'undefined') {
         convConfigSidenotes = lf_extend(convConfigSidenotes, livefyreSidenotesConfig);
     }
